@@ -1,0 +1,1 @@
+py -m PyInstaller --onefile --windowed --icon=icons/esse.ico --name=APP_AUTOMATION_4.1V --strip --upx-dir=C:/upx-4.2.4-win64 --noconfirm --add-data "icons/Altaia.png;icons" --add-data "icons/esse.ico;icons" --paths=. app.py

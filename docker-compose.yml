@@ -1,0 +1,23 @@
+services:
+  api:
+    build: .
+    container_name: automation-api
+    ports:
+      - "8080:8080"
+    volumes:
+      # Persiste logs fora do container
+      - ./logs:/app/logs
+      # Persiste arquivos gerados (masterfiles, jsons, etc)
+      - ./output:/app/output
+    environment:
+      - HOST=0.0.0.0
+      - RELOAD=false
+      - OUTPUT_BASE_PATH=/app/output
+      - APP_ENV=production
+      - LOG_LEVEL=INFO
+    restart: unless-stopped
+    # Limites de recursos (opcional)
+    # deploy:
+    #   resources:
+    #     limits:
+    #       memory: 2G

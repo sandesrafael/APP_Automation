@@ -1,0 +1,41 @@
+# Git
+.git
+.gitignore
+
+# Python
+__pycache__
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+.venv/
+env/
+.env
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Logs locais (serão criados no volume)
+logs/
+
+# Arquivos temporários
+*.tmp
+*.temp
+
+# Arquivos de teste
+tests/
+pytest_cache/
+.coverage
+
+# Documentação
+*.md
+!README.md
+
+# Arquivos de saída (serão criados no volume)
+MASTERFILES_*/
+JSON_*/
+DBN_*/

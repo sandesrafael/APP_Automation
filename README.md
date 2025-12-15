@@ -7,7 +7,7 @@
 ![License](https://img.shields.io/badge/License-MIT-green.svg)
 ![Docker](https://img.shields.io/badge/Docker-Ready-2496ED.svg)
 
-**REST API para automação de geração de Masterfiles, JSONs e modelos DBN para Oracle/PostgreSQL**
+**REST API para automação de geração de Masterfiles, JSONs e modelos DBNO e DBN1 para Oracle/PostgreSQL**
 
 [Início Rápido](#-início-rápido) •
 [Documentação](#-documentação) •

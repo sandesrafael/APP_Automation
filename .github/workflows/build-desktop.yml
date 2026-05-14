@@ -1,0 +1,63 @@
+name: Build Desktop Executable (Windows)
+
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - 'v*'
+    paths:
+      - 'desktop/**'
+      - '.github/workflows/build-desktop.yml'
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: 'pip'
+
+      - name: Install UPX
+        run: choco install upx -y --no-progress
+        shell: powershell
+
+      - name: Install Python dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pyinstaller PyQt5
+        shell: powershell
+
+      - name: Build .exe with PyInstaller
+        working-directory: desktop
+        run: |
+          python -m PyInstaller `
+            --onefile `
+            --windowed `
+            --icon=icons/esse.ico `
+            --name=APP_AUTOMATION_4.1V `
+            --strip `
+            --noconfirm `
+            --add-data "icons/Altaia.png;icons" `
+            --add-data "icons/esse.ico;icons" `
+            --paths=. `
+            app.py
+        shell: powershell
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: APP_AUTOMATION_4.1V-windows
+          path: desktop/dist/APP_AUTOMATION_4.1V.exe
+          if-no-files-found: error
+
+      - name: Attach to release (tag pushes only)
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: desktop/dist/APP_AUTOMATION_4.1V.exe

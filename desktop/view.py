@@ -1,18 +1,25 @@
-﻿from masterfile_processor import MasterfileCreator
-from json_criador import JsonCreator  
-from renomearDBN1 import RenameFiles
-from infrastructure.generators.modeloDBN0 import DBNModel
-from utils import CreateAndDeleteFolder as utils
 import os
 import sys
+from pathlib import Path
+
+# Garante que o repositório raiz está no sys.path, tanto em desenvolvimento
+# quanto no bundle do PyInstaller. Isso permite importar `src.<pacote>...`.
+_REPO_ROOT = Path(__file__).resolve().parent.parent
+if str(_REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(_REPO_ROOT))
+
+from src.domain.processors.masterfile_processor import MasterfileCreator
+from src.domain.processors.json_criador import JsonCreator
+from src.infrastructure.generators.renomearDBN1 import RenameFiles
+from src.infrastructure.generators.modeloDBN0 import DBNModel
+from src.utils.utils import CreateAndDeleteFolder as utils
 
 # Services Layer - podem ser usados opcionalmente
 try:
-    from services.masterfile_service import MasterfileService
-    from services.json_service import JsonService
+    from src.services.masterfile_service import MasterfileService
+    from src.services.json_service import JsonService
     USE_SERVICES = True
 except ImportError:
-    # Se services nÃ£o existirem ainda, usa o cÃ³digo legado
     USE_SERVICES = False
 
 from PyQt5.QtWidgets import ( QWidget, QTabWidget, QVBoxLayout, QHBoxLayout,

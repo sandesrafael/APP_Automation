@@ -12,8 +12,10 @@ Requisitos:
 Comando:
 
 ```bat
-py -m PyInstaller --onefile --windowed --icon=icons/esse.ico --name=APP_AUTOMATION_4.1V --upx-dir=C:/upx-4.2.4-win64 --upx-exclude "python312.dll" --upx-exclude "vcruntime140.dll" --upx-exclude "vcruntime140_1.dll" --upx-exclude "Qt5Core.dll" --upx-exclude "Qt5Gui.dll" --upx-exclude "Qt5Widgets.dll" --noconfirm --add-data "icons/Altaia.png;icons" --add-data "icons/esse.ico;icons" --paths=. app.py
+py -m PyInstaller --onefile --windowed --icon=icons/esse.ico --name=APP_AUTOMATION_4.1V --upx-dir=C:/upx-4.2.4-win64 --upx-exclude "python312.dll" --upx-exclude "vcruntime140.dll" --upx-exclude "vcruntime140_1.dll" --upx-exclude "Qt5Core.dll" --upx-exclude "Qt5Gui.dll" --upx-exclude "Qt5Widgets.dll" --noconfirm --add-data "icons/Altaia.png;icons" --add-data "icons/esse.ico;icons" --paths=. --paths=.. --collect-submodules src app.py
 ```
+
+> **Importante:** rodar o comando de dentro de `desktop/`. O `--paths=..` adiciona a raiz do repositório (onde fica o pacote `src/`) ao caminho de busca do PyInstaller, e `--collect-submodules src` garante que todos os submódulos de `src/` sejam empacotados.
 
 > **Não use `--strip` no Windows** — corrompe a `python3XX.dll` e o executável falha com erro `Failed to load Python DLL ... LoadLibrary: Acesso inválido ao local de memória`. O UPX também corrompe a DLL do Python se aplicado nela; por isso os `--upx-exclude` acima são obrigatórios.
 
@@ -34,7 +36,7 @@ Diferenças em relação ao comando do Windows:
 Comando:
 
 ```bash
-python3 -m PyInstaller --onefile --windowed --icon=icons/esse.ico --name=APP_AUTOMATION_4.1V --strip --upx-dir=/usr/bin --noconfirm --add-data "icons/Altaia.png:icons" --add-data "icons/esse.ico:icons" --paths=. app.py
+python3 -m PyInstaller --onefile --windowed --icon=icons/esse.ico --name=APP_AUTOMATION_4.1V --upx-dir=/usr/bin --upx-exclude "libpython3.12.so" --noconfirm --add-data "icons/Altaia.png:icons" --add-data "icons/esse.ico:icons" --paths=. --paths=.. --collect-submodules src app.py
 ```
 
 ## GitHub Actions (gerar .exe sem precisar de Windows local)

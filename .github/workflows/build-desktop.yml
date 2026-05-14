@@ -31,6 +31,7 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install pyinstaller PyQt5
+          if (Test-Path requirements.txt) { pip install -r requirements.txt }
         shell: powershell
 
       - name: Build .exe with PyInstaller
@@ -51,6 +52,8 @@ jobs:
             --upx-exclude "Qt5Gui.dll" `
             --upx-exclude "Qt5Widgets.dll" `
             --paths=. `
+            --paths=.. `
+            --collect-submodules src `
             app.py
         shell: powershell
 

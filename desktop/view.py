@@ -39,7 +39,7 @@ class Worker(QThread):
 
     def run(self):
         try:
-            # Assumindo que o mÃ©todo create_masterfiles pode informar progresso
+            # Assumindo que o método create_masterfiles pode informar progresso
             result = self.masterfile_creator.create_masterfiles(self.update_progress)
             self.finished.emit(result)
         except Exception as e:
@@ -61,7 +61,7 @@ class GeraInterface(QWidget):
     def resource_path(self, relative_path):
             """ Obter o caminho absoluto para recursos, funcionando para desenvolvimento e para PyInstaller """
             try:
-                # PyInstaller cria a variÃ¡vel _MEIPASS quando Ã© executado o executÃ¡vel empacotado
+                # PyInstaller cria a variável _MEIPASS quando é executado o executável empacotado
                 base_path = sys._MEIPASS
             except Exception:
                 base_path = os.path.abspath(".")
@@ -70,7 +70,7 @@ class GeraInterface(QWidget):
     def initUI(self):
     
     
-        self.setWindowTitle("APP AUTOMATION - VersÃ£o TESTE")
+        self.setWindowTitle("APP AUTOMATION - Versão TESTE")
         self.setWindowIcon(QIcon(self.resource_path("icons/esse.ico")))
         self.setGeometry(100, 100, 800, 600)
         
@@ -167,9 +167,9 @@ class GeraInterface(QWidget):
         # Inventory Name e Checkbox
         hbox3 = QHBoxLayout()
         label3 = QLabel('Entre com os elementos da coluna Inventory Name:')
-        self.Vmf = QCheckBox("Masterfiles Oracle")
+        self.Vmf_master = QCheckBox("Masterfiles Oracle")
         hbox3.addWidget(label3)
-        hbox3.addWidget(self.Vmf)
+        hbox3.addWidget(self.Vmf_master)
         layout.addLayout(hbox3)
         self.inventory_name = QTextEdit()
         self.inventory_name.setAcceptRichText(False)
@@ -181,7 +181,7 @@ class GeraInterface(QWidget):
         self.progress_bar.setValue(0)
         layout.addWidget(self.progress_bar)
 
-        # BotÃµes Criar
+        # Botões Criar
         hbox4 = QHBoxLayout()
         criar_button = QPushButton("Criar")
         criar_button.clicked.connect(self.on_criar_button_clicked)
@@ -211,7 +211,7 @@ class GeraInterface(QWidget):
         image_label.setAlignment(Qt.AlignCenter)
         layout.addWidget(image_label)
 
-        # BotÃ£o Renomear
+        # Botão Renomear
         renomear_button = QPushButton("Renomear")
         renomear_button.clicked.connect(self.on_renomear_button_clicked)
         layout.addWidget(renomear_button)
@@ -232,8 +232,8 @@ class GeraInterface(QWidget):
         hbox1.addWidget(browse_button3)
         layout.addLayout(hbox1)
 
-        # Nome de inventÃ¡rio das DBN0s
-        label2 = QLabel('Entre com o nome de inventÃ¡rio das DBN0s:')
+        # Nome de inventário das DBN0s
+        label2 = QLabel('Entre com o nome de inventário das DBN0s:')
         self.lista_DBN0 = QTextEdit()
         self.lista_DBN0.setAcceptRichText(False)
         layout.addWidget(label2)
@@ -247,7 +247,7 @@ class GeraInterface(QWidget):
         hbox2.addWidget(self.schema_DBN0)
         layout.addLayout(hbox2)
 
-        # BotÃ£o Gerar DBN0
+        # Botão Gerar DBN0
         gerar_dbn0_button = QPushButton("Gerar DBN0")
         gerar_dbn0_button.clicked.connect(self.on_gerar_dbn0_button_clicked)
         layout.addWidget(gerar_dbn0_button)
@@ -268,8 +268,8 @@ class GeraInterface(QWidget):
         hbox1.addWidget(browse_button4)
         layout.addLayout(hbox1)
 
-        # Nome de inventÃ¡rio das DBN1s
-        label2 = QLabel('Entre com o nome de inventÃ¡rio das DBN1s:')
+        # Nome de inventário das DBN1s
+        label2 = QLabel('Entre com o nome de inventário das DBN1s:')
         self.lista_DBN1 = QTextEdit()
         self.lista_DBN1.setAcceptRichText(False)
         layout.addWidget(label2)
@@ -283,15 +283,15 @@ class GeraInterface(QWidget):
         hbox2.addWidget(self.schema_DBN1)
         layout.addLayout(hbox2)
 
-        # Nome lÃ³gico da classe
+        # Nome lógico da classe
         hbox3 = QHBoxLayout()
-        label4 = QLabel('Entre com o nome lÃ³gico da classe:')
+        label4 = QLabel('Entre com o nome lógico da classe:')
         self.classe_DBN1 = QLineEdit()
         hbox3.addWidget(label4)
         hbox3.addWidget(self.classe_DBN1)
         layout.addLayout(hbox3)
 
-        # BotÃ£o Gerar DBN1
+        # Botão Gerar DBN1
         gerar_dbn1_button = QPushButton("Gerar DBN1")
         gerar_dbn1_button.clicked.connect(self.on_gerar_dbn1_button_clicked)
         layout.addWidget(gerar_dbn1_button)
@@ -317,11 +317,11 @@ class GeraInterface(QWidget):
         label3 = QLabel('Entre com os elementos da coluna Inventory Name:')
         hbox_inventory.addWidget(label3)
 
-        self.Vmf = QCheckBox("Oracle")  # checkbox
-        self.Vmf.setToolTip("Por default utiliza Postgree")
+        self.Vmf_json = QCheckBox("Oracle")  # checkbox
+        self.Vmf_json.setToolTip("Por default utiliza Postgree")
         self.Prm = QCheckBox("Parametros")  # checkbox
         self.Bte = QCheckBox("Enriquecimento")  # checkbox
-        hbox_inventory.addWidget(self.Vmf)
+        hbox_inventory.addWidget(self.Vmf_json)
         hbox_inventory.addWidget(self.Prm)
         hbox_inventory.addWidget(self.Bte)
 
@@ -337,19 +337,19 @@ class GeraInterface(QWidget):
         self.progress_bar_json.setValue(0)
         layout.addWidget(self.progress_bar_json)
 
-        # BotÃ£o Criar JSON
+        # Botão Criar JSON
         hbox4 = QHBoxLayout()
         criar_json_button = QPushButton("Criar JSON")
         criar_json_button.clicked.connect(self.on_criar_json_button_clicked)
         hbox4.addWidget(criar_json_button)
         layout.addLayout(hbox4)
 
-        # Aplicar layout corretamente Ã  aba 5
+        # Aplicar layout corretamente Í  aba 5
         self.tab5.setLayout(layout)
 
 
 
-    # FunÃ§Ãµes auxiliares para os botÃµes de navegaÃ§Ã£o
+    # Funções auxiliares para os botões de navegação
 
     def browse_pack_json(self):
         options = QFileDialog.Options()
@@ -382,27 +382,27 @@ class GeraInterface(QWidget):
         if folderName:
             self.path_DBN1.setText(folderName)
 
-    # FunÃ§Ãµes para os botÃµes de aÃ§Ã£o com nomes iguais aos da versÃ£o anterior
+    # Funções para os botões de ação com nomes iguais aos da versão anterior
     def on_criar_button_clicked(self):
         path_name = self.path_name.text()
         inventory_names = self.inventory_name.toPlainText().split('\n')
         
-        Vmf = self.Vmf.isChecked()
+        Vmf = self.Vmf_master.isChecked()
         caminho_master = self.caminho_master.text()
         
-        # Verificar se o path_name estÃ¡ vazio
+        # Verificar se o path_name está vazio
         if not path_name.strip():
             QMessageBox.warning(self, "Erro!", "Por favor, insira o caminho do pack antes de prosseguir.")
-            return  # Retorna sem encerrar a aplicaÃ§Ã£o, aguardando a aÃ§Ã£o do usuÃ¡rio
+            return  # Retorna sem encerrar a aplicação, aguardando a ação do usuário
         
         if not path_name.lower().endswith(('.xls', '.xlsx')):
-            QMessageBox.warning(self, "Formato InvÃ¡lido!", "Insira um arquivo vÃ¡lido. Ex: xls/xlsx")
+            QMessageBox.warning(self, "Formato Inválido!", "Insira um arquivo válido. Ex: xls/xlsx")
             return
         
         inventory_names = [item.strip() for item in inventory_names if item.strip()]
         if not inventory_names:
             QMessageBox.warning(self, "Erro!", "Por favor, insira pelo menos um Inventory Name antes de prosseguir.")
-            return  # Retorna sem encerrar a aplicaÃ§Ã£o, aguardando a aÃ§Ã£o do usuÃ¡rio
+            return  # Retorna sem encerrar a aplicação, aguardando a ação do usuário
         
         
         self.path_name_created = utils().create_folder(path_name, "MASTERFILES")
@@ -431,7 +431,7 @@ class GeraInterface(QWidget):
             utils().delete_folder(self.path_name_created)
         else:
             self.progress_bar.setValue(100)
-        self.worker = None  # Limpar referÃªncia ao worker
+        self.worker = None  # Limpar referência ao worker
 
 
     def on_renomear_button_clicked(self):
@@ -456,26 +456,26 @@ class GeraInterface(QWidget):
         path_name = self.path_name_json.text().strip()
         inventory_names = self.inventory_name_json.toPlainText().split('\n')
 
-        Vmf = self.Vmf.isChecked()
+        Vmf = self.Vmf_json.isChecked()
         Prm = self.Prm.isChecked()
         Bte = self.Bte.isChecked()
         
         inventory_names = [i.strip() for i in inventory_names if i.strip()]
 
-        # VerificaÃ§Ãµes
+        # Verificações
         if not path_name:
             QMessageBox.warning(self, "Erro!", "Por favor, selecione o caminho do pack antes de prosseguir.")
             return
 
         if not path_name.lower().endswith(('.xls', '.xlsx')):
-            QMessageBox.warning(self, "Formato InvÃ¡lido!", "Insira um arquivo vÃ¡lido. Ex: xls/xlsx")
+            QMessageBox.warning(self, "Formato Inválido!", "Insira um arquivo válido. Ex: xls/xlsx")
             return
 
         if not inventory_names:
             QMessageBox.warning(self, "Erro!", "Por favor, insira pelo menos um Inventory Name antes de prosseguir.")
             return
 
-        # CriaÃ§Ã£o de pasta temporÃ¡ria
+        # Criação de pasta temporária
         self.path_name_created_json = utils().create_folder(path_name,"JSON")
 
         # Desabilita abas e zera barra de progresso

@@ -41,10 +41,15 @@ jobs:
             --windowed `
             --icon=icons/esse.ico `
             --name=APP_AUTOMATION_4.1V `
-            --strip `
             --noconfirm `
             --add-data "icons/Altaia.png;icons" `
             --add-data "icons/esse.ico;icons" `
+            --upx-exclude "python312.dll" `
+            --upx-exclude "vcruntime140.dll" `
+            --upx-exclude "vcruntime140_1.dll" `
+            --upx-exclude "Qt5Core.dll" `
+            --upx-exclude "Qt5Gui.dll" `
+            --upx-exclude "Qt5Widgets.dll" `
             --paths=. `
             app.py
         shell: powershell

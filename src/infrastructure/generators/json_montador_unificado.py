@@ -83,12 +83,25 @@ class JsonMontadorUnificado:
             for row in data_sources_attr_list:
                 attr_dict[row[0]].append(row)
 
+            generated = 0
+            skipped = []  # list of (inventory_name, reason)
+
             for ds_row in data_sources_list:
                 inventory_name = ds_row[0]
 
+                all_rows = attr_dict.get(inventory_name, [])
+                if not all_rows:
+                    reason = (
+                        f"nenhuma linha encontrada na aba '3. Data Sources Attr & Count' "
+                        f"para o Source Name '{inventory_name}'"
+                    )
+                    logger.warning(f"{inventory_name}: {reason}")
+                    skipped.append((inventory_name, reason))
+                    continue
+
                 # Filtra atributos baseado no tipo (COUNTER ou PARAMETER)
                 data_sources_attr_id = [
-                    row for row in attr_dict.get(inventory_name, [])
+                    row for row in all_rows
                     if not (
                         (str(row[5]).strip().upper() == self.metric_type) or
                         (not self.is_parameter and (
@@ -106,7 +119,7 @@ class JsonMontadorUnificado:
 
                 # Cria uma lista com todos os atributos do tipo especificado
                 data_sources_attr_counter = [
-                    row for row in attr_dict.get(inventory_name, [])
+                    row for row in all_rows
                     if (
                         (str(row[5]).strip().upper() == self.metric_type) or
                         (not self.is_parameter and (
@@ -116,13 +129,18 @@ class JsonMontadorUnificado:
                     )
                 ]
 
-                if not data_sources_attr_id:
-                    logger.warning(f"{inventory_name} não possui atributos em data_sources_attr_list")
-                    continue
-
+                # Se não há linhas do tipo de métrica esperado, não há o que gerar
+                # (em modo PARAMETER precisamos de linhas Parameter; em modo COUNTER
+                # precisamos de Counter ou INCREMENTAL/DECREMENTAL). idAttributes pode
+                # ficar vazio sem problemas — tabelas só com Parameter caem nesse caso.
                 if not data_sources_attr_counter:
-                    tipo_msg = "parâmetros" if self.is_parameter else "contadores"
-                    logger.warning(f"{inventory_name} não possui {tipo_msg} em data_sources_attr_list")
+                    tipo_msg = "Parameter" if self.is_parameter else "Counter / Incremental/Decremental"
+                    reason = (
+                        f"nenhuma linha com Metrics Attribute Type = {tipo_msg} "
+                        f"em '3. Data Sources Attr & Count'"
+                    )
+                    logger.warning(f"{inventory_name}: {reason}")
+                    skipped.append((inventory_name, reason))
                     continue
 
                 # Extração e montagem do JSON
@@ -199,8 +217,19 @@ class JsonMontadorUnificado:
                 # Salvar JSON em arquivo com formatação correta
                 json_path = f"{self.path_name}/{inventory_name}.json"
                 self._save_json_with_formatting(json_path, json_data)
+                generated += 1
 
-            return True
+            if skipped:
+                logger.warning(
+                    f"JSON: {generated} gerado(s), {len(skipped)} pulado(s). "
+                    f"Pulados: {[name for name, _ in skipped]}"
+                )
+                for name, reason in skipped:
+                    logger.warning(f"  - {name}: {reason}")
+
+            self.skipped_inventories = skipped
+            self.generated_count = generated
+            return generated > 0
 
         except Exception as e:
             logger.error(f"Erro ao gerar JSON: {str(e)}")

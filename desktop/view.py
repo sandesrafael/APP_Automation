@@ -483,12 +483,56 @@ class GeraInterface(QWidget):
         self.progress_bar_json.setValue(0)
 
         try:
-            processor = JsonCreator(path_name, inventory_names, self.path_name_created_json, Vmf, Bte, Prm)
-            
-            processor.create_json()
+            # use_alerts=False evita o caminho de alerta legado (que tenta
+            # importar 'alerta' não bundlado no .exe e falha em silêncio).
+            processor = JsonCreator(
+                path_name, inventory_names, self.path_name_created_json,
+                Vmf, Bte, Prm, use_alerts=False
+            )
 
-            self.progress_bar_json.setValue(100)
-            QMessageBox.information(self, "Sucesso!", "JSON criado com sucesso!")
+            result = processor.create_json()
+            generated = getattr(processor, 'generated_count', None)
+            skipped = getattr(processor, 'skipped_inventories', []) or []
+            last_error = getattr(processor, 'last_error', None)
+
+            # Fallback: se o pipeline não expôs contagem, conta arquivos na pasta
+            if generated is None:
+                generated = sum(
+                    1 for name in os.listdir(self.path_name_created_json)
+                    if name.lower().endswith('.json')
+                )
+
+            if result and generated > 0:
+                self.progress_bar_json.setValue(100)
+                msg = f"{generated} JSON(s) gerado(s) com sucesso."
+                if skipped:
+                    msg += "\n\nPulados:\n" + "\n".join(
+                        f"- {name}: {reason}" for name, reason in skipped
+                    )
+                QMessageBox.information(self, "Sucesso!", msg)
+            else:
+                utils().delete_folder(self.path_name_created_json)
+                if skipped:
+                    detail = "\n".join(f"- {name}: {reason}" for name, reason in skipped)
+                    msg = (
+                        "Nenhum JSON foi gerado. Inventários pulados:\n\n"
+                        f"{detail}\n\n"
+                        "Verifique se as linhas correspondentes em "
+                        "'3. Data Sources Attr & Count' têm Metrics Attribute Type "
+                        "compatível com o modo selecionado (marque 'Parametros' para "
+                        "tabelas de parâmetros)."
+                    )
+                elif last_error:
+                    msg = f"Falha ao gerar os JSONs.\n\nErro: {last_error}"
+                else:
+                    msg = (
+                        "Nenhum JSON foi gerado. Verifique:\n"
+                        "- Nomes de inventário batem com a aba '3. Data Sources'\n"
+                        "- Aba '3. Data Sources Attr & Count' tem Source Name "
+                        "correspondente para cada inventário\n"
+                        "- Cabeçalhos das abas na 4ª linha"
+                    )
+                QMessageBox.critical(self, "Erro!", msg)
 
         except Exception as e:
             utils().delete_folder(self.path_name_created_json)

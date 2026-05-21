@@ -86,6 +86,7 @@ class JsonCreator:
         except Exception as e:
             if self.use_alerts:
                 self.alerts.error('Ocorreu um erro inesperado ao gerar os jsons!', str(e))
+            self.last_error = str(e)
             result = False
             return result
 
@@ -99,7 +100,7 @@ class JsonCreator:
         try:
             # Define o tipo de banco de dados
             db_type = 'oracle' if self.vmf else 'postgres'
-            
+
             # Cria o montador unificado com as configuraÃ§Ãµes apropriadas
             montar_json = JsonMontadorUnificado(
                 path_name=self.path_name,
@@ -107,13 +108,18 @@ class JsonCreator:
                 is_parameter=self.prm,
                 use_alerts=self.use_alerts
             )
-            
+
             # Gera os JSONs
-            return montar_json.generate(data_sources_list, data_sources_attr_list)
-            
+            result = montar_json.generate(data_sources_list, data_sources_attr_list)
+            # Expõe informações para o caller (view) decidir mensagens
+            self.skipped_inventories = getattr(montar_json, 'skipped_inventories', [])
+            self.generated_count = getattr(montar_json, 'generated_count', 0)
+            return result
+
         except Exception as err:
             if self.use_alerts:
                 self.alerts.error('Erro ao gerar os json!', str(err))
+            self.last_error = str(err)
             return False
 
     

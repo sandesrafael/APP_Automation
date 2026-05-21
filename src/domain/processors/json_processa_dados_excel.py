@@ -103,16 +103,18 @@ class JsonDataProcessor(BaseDataProcessor):
                 try:
                     sheet_name = info['sheet_name']
                     if sheet_name not in data_frames_raw:
-                        msg_alerta_erro("Planilha nÃ£o encontrada!",
-                                        "A planilha '{sheet_name}' especificada nÃ£o foi encontrada nos dados carregados. Verifique se o nome da aba estÃ¡ correto.")
-                        raise
+                        self._alerta_erro(
+                            "Planilha não encontrada!",
+                            f"A planilha '{sheet_name}' especificada não foi encontrada nos dados carregados. Verifique se o nome da aba está correto."
+                        )
+                        raise KeyError(f"Sheet '{sheet_name}' not found in pack")
                     data_frames[key] = data_frames_raw[sheet_name]
                 except Exception as e:
                     raise Exception(f"Erro ao processar a planilha '{sheet_name}' para a chave '{key}'. Detalhes do erro: {e}")
             return data_frames   
         except Exception as e:
-            # Retorna ou loga a mensagem de erro detalhada para facilitar a identificaÃ§Ã£o do problema
-            msg_alerta_erro("ERRO!", f"Erro ao carregar os DataFrames. Detalhes: {e}")
+            # Retorna ou loga a mensagem de erro detalhada para facilitar a identificação do problema
+            self._alerta_erro("ERRO!", f"Erro ao carregar os DataFrames. Detalhes: {e}")
             raise
 
     def __carregar_planilha(self, sheet_names, nrows=4):

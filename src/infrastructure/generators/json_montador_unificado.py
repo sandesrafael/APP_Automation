@@ -156,17 +156,23 @@ class JsonMontadorUnificado:
                 # Aplica transformação de case apropriada
                 case_func = self.config['case_transform']
                 
+                # O campo de tempo (DATETIME/RESULTTIME/...) pode estar em qualquer
+                # linha de atributo do inventário, inclusive nas linhas marcadas como
+                # Parameter (tabelas só-Parameter). Buscar em todas as linhas evita
+                # cair no fallback "VERIFICAR QUAL O CAMPO DE TEMPO".
+                date_attribute_name = self._verifica_tipo_tempo(all_rows)
+
                 json_data = {
                     "tableInfo": {
                         "aditionalAttributes": self._infoAdicionalAttributes(data_sources_attr_id),
                         "counterNameColumn": "*",
                         "counterValueColumn": "*",
                         "dateAttribute": {
-                            "name": self._verifica_tipo_tempo(data_sources_attr_id),
+                            "name": date_attribute_name,
                             **self.config['date_attribute']
                         },
                         "dateAttributeUTC": {
-                            "name": self._verifica_tipo_tempo(data_sources_attr_id),
+                            "name": date_attribute_name,
                             **self.config['date_attribute']
                         },
                         "expirationDateAttribute": None,

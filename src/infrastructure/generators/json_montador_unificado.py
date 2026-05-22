@@ -32,19 +32,7 @@ class JsonMontadorUnificado:
         self._setup_db_config()
     
     def _setup_db_config(self):
-        """Configura parâmetros específicos de cada banco de dados.
-
-        Convenção de dateAttribute:
-        - sqlType combina com a função de conversão:
-            Oracle TIMESTAMP -> TO_TIMESTAMP (não to_date, que retorna DATE
-            e perde fração de segundo de TIMESTAMP(n)).
-            Postgres timestamp -> to_timestamp.
-        - Os campos toChar e toDate, neste schema, são ambos expressões SQL
-          que recebem ? (a string de origem) e retornam o tipo da coluna.
-          Por isso usam a mesma função/máscara em ambos os campos.
-        - Máscara YYYYMMDDHH24MI: formato típico de datetime das tabelas
-          deste pack (CM/PM Ericsson), inclusive nas tabelas só-Parameter.
-        """
+        """Configura parâmetros específicos de cada banco de dados."""
         if self.db_type == 'oracle':
             self.config = {
                 'case_transform': str.upper,
@@ -57,11 +45,19 @@ class JsonMontadorUnificado:
                 },
                 'date_attribute': {
                     'sqlType': 'TIMESTAMP',
-                    'toChar': "TO_TIMESTAMP(?,'YYYYMMDDHH24MI')",
-                    'toDate': "TO_TIMESTAMP(?,'YYYYMMDDHH24MI')"
+                    'toChar': "to_date(?,'YYYYMMDDHH24MI')",
+                    'toDate': "to_date(?,'YYYYMMDDHH24MI')"
                 },
                 'sequence_type': 'NUMBER(20)'
             }
+
+            if self.is_parameter:
+                # Configuração específica para parâmetros Oracle
+                self.config['date_attribute'] = {
+                    'sqlType': 'TIMESTAMP',
+                    'toChar': "to_char(?,'YYYY-MM-DD HH24:MI')",
+                    'toDate': "TO_TIMESTAMP(?, 'YYYY-MM-DD HH24:MI:SS.FF')"
+                }
         else:  # postgres
             self.config = {
                 'case_transform': str.lower,
@@ -74,8 +70,8 @@ class JsonMontadorUnificado:
                 },
                 'date_attribute': {
                     'sqlType': 'timestamp',
-                    'toChar': "to_timestamp(?,'YYYYMMDDHH24MI')",
-                    'toDate': "to_timestamp(?,'YYYYMMDDHH24MI')"
+                    'toChar': "to_char(?,'YYYY-MM-DD HH24:MI')",
+                    'toDate': "?::timestamp"
                 },
                 'sequence_type': 'numeric(20)'
             }
